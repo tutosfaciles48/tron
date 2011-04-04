@@ -1,0 +1,27 @@
+!!! 5
+html
+    head
+        title Tron Node
+        link(rel="stylesheet", href="/stylesheets/style.css") 
+    body
+        #title
+            h1 TRON
+            span#instructions 
+                | Use your 
+                span.hi arrow keys 
+                | to change directions
+                br
+                | last team standing
+                span.hi wins 
+                br
+                br
+                span.hi#numUsers 0 users
+                | waiting for game to begin...
+                br
+                #userList
+            .ready Ready?
+        canvas#main
+    script(src="/javascripts/jquery.js")
+    script(src="http://cdn.socket.io/stable/socket.io.js")
+    script(src="/javascripts/pen.js")
+    script(src="/javascripts/main.js")
