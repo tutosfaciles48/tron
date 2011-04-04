@@ -33,7 +33,6 @@ function updateGrid(data)
         $("#title").fadeOut('fast'); 
         running = true;
     }
-
     if (running) { drawGame(); }
 }
 
@@ -48,7 +47,8 @@ function updateUserList(data)
 
 function initializeGrid(data)
 {
-    // first time we contact the server, capture the relevant values
+    // first time we contact the server we capture some crucial, game setting values
+    // to initialize other objects and align the canvas properly
     COLORS = data.init.COLORS;
     canvW = data.init.canvW;
     canvH = data.init.canvH;
@@ -83,13 +83,13 @@ function drawGame()
         }
     }
 
-    // draw marker for player
+    // draw marker to identify player
     pen.rect(curplayer.curpos.x * coords.tileSize, curplayer.curpos.y * coords.tileSize, coords.tileSize, coords.tileSize, "yellow");
 }
 
-// tell the server user 'id' has changed directions
 $(document).keydown(function(e) 
 { 
+    // tell the server user 'id' has changed directions
     if (e.keyCode >= 37 && e.keyCode <= 40) {
         socket.send({'id': sessionId, 'keyCode': e.keyCode});
     }
@@ -102,25 +102,3 @@ $(".ready").toggle(function() {
     $(this).removeClass("active").html("Ready?");
     socket.send({ 'id': sessionId, 'ready': false });
 });
-
-/*
-
-        if (player.alive && (!grid.inBounds(player.curpos.x, player.curpos.y) || 
-                (grid.getAt(player.curpos.x, player.curpos.y) > 0))) {
-            socket.send("Player has Died");
-            player.alive = false;
-            explosions.push(new Explosion({ x: player.curpos.x * tileSize, y: player.curpos.y * tileSize }));
-        } 
-        // draw explosions
-        for (var i=0; i < explosions.length; i++) {
-            curexp = explosions[i];
-            curexp.step();
-            for (var j=0; j < curexp.particles.length; j++) {
-                curpar = curexp.particles[j];
-                pen.rect(curpar.x, curpar.y, 3, 3, curexp.color);
-            }
-            
-            if (curexp.dead()) { explosions.splice(i, 1); }
-        }
-    };
-*/

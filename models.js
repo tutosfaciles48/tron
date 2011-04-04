@@ -73,13 +73,14 @@ Grid = function Grid(width, height, tileSize)
 Explosion = function Explosion(pos, color)
 {
     this.pos = pos;
-    this.duration = Math.ceil(Math.random() * 20 + 5);
+    this.duration = 20;
     this.speed = Math.random() * 10 + 5;
+    this.count = 20;
     this.color = color;
     this.particles = [];
 
     // create initial particles with random direction
-    for (var i=0; i < 10; i++) {
+    for (var i=0; i < this.count; i++) {
         this.particles.push({
             opac: 1,
             x: pos.x,
