@@ -43,6 +43,7 @@ var loop;
 var numUsers = 0;
 var players = {};
 var explosions = [];
+var winner = false;
 var grid = new models.Grid(canvW, canvH, tileSize);
 var spawnPoints = [
     { pos: { x: 0, y: 0 }, dir: DIRECTIONS.S },
@@ -111,7 +112,7 @@ function gameLoop()
 {
     // update players position, check for collisions, spawn explosions when necessary, and then
     // send all the updated information to the client for drawing
-    var i, curplayer;
+    var i, curplayer, aliveCount = 0;
     for (i in players) {
         curplayer = players[i];        
 
@@ -123,6 +124,8 @@ function gameLoop()
                 curplayer.alive = false;
                 explosions.push(new models.Explosion({ x: curplayer.curpos.x * tileSize, y: curplayer.curpos.y * tileSize }, 
                             (curplayer.lightType === CODES.blue ? COLORS.blue : COLORS.red)));
+            } else { 
+                aliveCount += 1;
             }
         }
     }
@@ -133,7 +136,19 @@ function gameLoop()
         if (curexp.dead()) { explosions.splice(i, 1); }
     }
 
-    socket.broadcast({ coords: generateCoords(), players: players, explosions: explosions });    
+    socket.broadcast({ coords: generateCoords(), players: players, explosions: explosions});    
+
+    if (aliveCount === 1) {
+        for (i in players) {
+            curplayer = players[i];
+            if (curplayer.alive) {
+                winner = curplayer;
+                socket.broadcast({ winner: winner });
+                clearInterval(loop);
+                return;
+            }
+        }
+    }
 }
 
 function generateCoords()

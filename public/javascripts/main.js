@@ -11,6 +11,7 @@ var coords = {};
 var players = {};
 var explosions = [];
 var running = false;
+var winner = false;
 
 // open the socket, and respond to messages (we should recieve an initial one to set the game up)
 socket = new io.Socket(null, { port: 8000 }); 
@@ -27,13 +28,14 @@ function updateGrid(data)
         players = data.players;
         curplayer = players[sessionId];
     }
+    if ('winner' in data) { announceWinner(data); }
     if ('explosions' in data) { explosions = data.explosions; }
     if ('numUsers' in data) { updateUserList(data); }
     if ('run' in data) {
         $("#title").fadeOut('fast'); 
         running = true;
     }
-    if (running) { drawGame(); }
+    if (running && !winner) { drawGame(); }
 }
 
 function updateUserList(data)
@@ -63,8 +65,14 @@ function initializeGrid(data)
     pen.clear(COLORS.bg);
 }
 
-function drawGame()
+function announceWinner(data)
 {
+    winner = data.winner;
+    $("#title").html("<h1>" + (winner.lightType === 1 ? "Blue" : "Red") + " Team Wins!</h1>").fadeIn();
+}
+
+function drawGame()
+{ 
     pen.clear(COLORS.bg);
 
     // draw red and blue players
@@ -81,7 +89,7 @@ function drawGame()
             curpar = curexp.particles[j];
             pen.rect(curpar.x, curpar.y, 3, 3, curexp.color);
         }
-    }
+    } 
 
     // draw marker to identify player
     pen.rect(curplayer.curpos.x * coords.tileSize, curplayer.curpos.y * coords.tileSize, coords.tileSize, coords.tileSize, "yellow");
